@@ -9,7 +9,7 @@ from flask.ext.login import current_user
 
 app = Flask(__name__)
 
-app.config.from_envvar('MAILADMIN_SITE_FLASK_SETTINGS')
+app.config.from_envvar('PANI_SITE_SETTINGS')
 
 db = SQLAlchemy(app)
 mail = Mail(app)
