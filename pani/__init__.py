@@ -12,17 +12,15 @@ app = Flask(__name__)
 app.config.from_envvar('PANI_SITE_SETTINGS')
 
 db = SQLAlchemy(app)
-mail = Mail(app)
 
-to_import_list = ['account', 'default', 'user']
+to_import_list = ['default']
 temp = __import__('pani.views', globals(), locals(), to_import_list, -1)
 
 
 from pani.model.user import User
 
-account = getattr(temp, 'account')
 default  = getattr(temp, 'default')
-app.add_url_rule('/account/login', 'login', account.account_login)
+app.add_url_rule('/login', 'login', default.default_login)
 
 
 
@@ -36,15 +34,6 @@ def load_user(userid):
         return User.get_by_id(int(userid))
 
 
-@identity_loaded.connect_via(app)
-def post_login(sender, identity):
-     # Set the identity user object
-    identity.user = current_user
-
-    # Add the UserNeed to the identity
-    if hasattr(current_user, 'id'):
-        identity.provides.add(UserNeed(current_user.id))
-
 
 @app.errorhandler(403)
 def page_not_found(e):
@@ -54,15 +43,6 @@ def page_not_found(e):
 
 
 ADMINS = ['sudheer@gavika.com']
-
-if not app.debug:
-    import logging
-    from logging.handlers import SMTPHandler
-    mail_handler = SMTPHandler('127.0.0.1',
-                               'service@gavika.com',
-                               ADMINS, 'Mailadmin Error')
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
 
 
 if __name__ == "__main__":

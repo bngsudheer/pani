@@ -13,6 +13,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(128))
+    public_key = db.Column(db.String(500))
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -32,4 +33,9 @@ class User(db.Model):
     def is_authenticated(self):
         return True
 
+    def is_active(self):
+        return True
     
+
+    def is_anonymous(self):
+        return False

@@ -1,0 +1,25 @@
+{% extends "/layout.html" %}
+
+{% block title %}My Account{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>My Account</h1>
+    <p>
+
+    <table class="table table-hover">
+        <tr>
+            <td>Username</td>
+            <td>{{user.username}}</td>
+        </tr>
+        <tr>
+            <td>SSH Public Key</td>
+            <td>{{user.public_key}}</td>
+        </tr>
+
+    </table>
+    <a href="/logout" title="Logout"><span class="glyphicon glyphicon-log-out"></span></a>
+
+        
+{% endblock %}
