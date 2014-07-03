@@ -68,8 +68,15 @@
     <div class="clearfix"> &nbsp;</div>
     <div class="clearfix"> &nbsp;</div>
     <div class="clearfix"> &nbsp;</div>
+    <div class="col-md-2">
+      <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="/user">Users</a></li>
+        <li><a href="/projects">Projects</a></li>
+        </ul>
+    </div>
 
-       <div class="col-md-10">
+
+    <div class="col-md-10">
 
       {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
