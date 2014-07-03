@@ -4,7 +4,6 @@ from flask import render_template
 from flask import request, render_template, flash, session, redirect, url_for
 
 from flask.ext.login import login_required
-from flask.ext.login import logout_user
 from flask.ext.login import login_user
 from flask.ext.login import current_user
 
@@ -12,7 +11,7 @@ from flask.ext.paginate import Pagination
 
 from pani import app
 from pani.forms import LoginForm
-from pani.forms import EditUserForm
+from pani.forms import UserForm
 
 from pani.model.user import User
 from pani import db
@@ -20,6 +19,8 @@ from pani import db
 @app.route('/')
 @login_required
 def default_index():
+    """Default index view.
+    """
     return render_template('/index.html', show_big_header=True)
 
 
@@ -54,7 +55,7 @@ def default_login():
 @app.route("/edit_user", methods=["GET", "POST"])
 def default_edit_user():
     user = User.get_by_id(int(request.args.get('user_id')))
-    form = EditUserForm()
+    form = UserForm(request.form, user=user)
     message = ''
     if form.validate_on_submit():
         flash("Edited")
@@ -111,6 +112,38 @@ def user_index():
             '/account/users.html', 
             users=users, 
             pagination=pagination
+        )
+
+
+@app.route('/user/add', methods=["GET", "POST"])
+@login_required
+def user_add():
+    form = UserForm(request.form)
+    if form.validate_on_submit():
+        user = User()
+        user.username = form.username.data
+
+        if form.password.data:
+
+            hash_ = hashlib.sha512()
+            hash_.update(form.password.data)
+            password = hash_.hexdigest()
+
+            user.password = password
+        else:
+            user.password = None
+ 
+        user.public_key = form.public_key.data
+
+        db.session.add(user)
+        db.session.commit()
+        flash("User has been added successfully")
+        return redirect('/users')
+      
+    return render_template(
+            '/add_user.html', 
+            form=form,
+            logged_in=False,
         )
 
 

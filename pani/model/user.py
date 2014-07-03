@@ -10,9 +10,11 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
+    sqlite_autoincrement=True
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
-    password = db.Column(db.String(128))
+    password = db.Column(db.String(128), default=None)
     public_key = db.Column(db.String(500))
 
     def __repr__(self):
