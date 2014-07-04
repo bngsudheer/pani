@@ -1,0 +1,22 @@
+{% extends "layout_user.html" %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>Edit Project</h1>
+
+    <form method=post action="/edit_project?project_id={{project.id}}">
+    <dl>
+        {{ form.csrf_token }}
+        {{ render_field(form.name) }}
+        {{ render_field(form.description) }}
+    </dl>
+      <input type="submit" value="Submit">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
+
+

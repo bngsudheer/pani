@@ -5,6 +5,12 @@ CREATE TABLE users (
     public_key TEXT NULL
 );
 
+CREATE TABLE projects (
+    id INTEGER PRIMARY KEY ASC,
+    name TEXT NOT NULL,
+    description TEXT NULL
+);
+
 
 
 /* Default data

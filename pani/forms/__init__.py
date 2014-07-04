@@ -72,4 +72,34 @@ class UserForm(Form):
 
 
 
+class ProjectForm(Form):
+
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        if 'project' in kwargs:
+            project = kwargs['project']
+            kwargs.setdefault('name', project.name)
+            kwargs.setdefault('description', project.description)
+            self._project = project
+        super(ProjectForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+
+    name = TextField(
+            'Name', 
+            [
+                validators.Length(min=2, max=20), 
+                validators.Required()
+            ]
+        )
+
+
+    description = TextField(
+            'Description', 
+            [
+                validators.Length(min=2, max=30), 
+                validators.Optional()
+            ]
+        )
+
+
+
 

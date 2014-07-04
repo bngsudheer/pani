@@ -12,8 +12,10 @@ from flask.ext.paginate import Pagination
 from pani import app
 from pani.forms import LoginForm
 from pani.forms import UserForm
+from pani.forms import ProjectForm
 
 from pani.model.user import User
+from pani.model.project import Project
 from pani import db
 
 @app.route('/')
@@ -61,6 +63,18 @@ def default_edit_user():
         flash("Edited")
         return redirect('/account')
     return render_template("/edit_user.html", form=form, message=message)
+
+@app.route("/edit_project", methods=["GET", "POST"])
+def default_edit_project():
+    project = Project.get_by_id(int(request.args.get('project_id')))
+    form = ProjectForm(request.form, project=project)
+    if form.validate_on_submit():
+        project.name = form.name.data
+        project.description = form.description.data
+        db.session.commit()
+        flash("Project has been successfully edited")
+        return redirect('/projects')
+    return render_template("/edit_project.html", form=form, project=project)
 
 
 
@@ -115,6 +129,34 @@ def user_index():
         )
 
 
+@app.route('/projects')
+@login_required
+def default_projects():
+
+    page = int(request.args.get('page', 1))
+    per_page = 10
+
+    projects = db.session.query(Project)
+    total_projects = projects.count()
+    projects = projects.offset(per_page*(page-1))
+
+    projects = projects.limit(per_page)
+    
+    pagination = Pagination(
+            page=page, 
+            total=total_projects, 
+            search=False, 
+            record_name='projects', 
+            bs_version='3'
+        )
+
+    return render_template(
+            '/projects.html', 
+            projects=projects, 
+            pagination=pagination
+        )
+
+
 @app.route('/user/add', methods=["GET", "POST"])
 @login_required
 def user_add():
@@ -147,10 +189,24 @@ def user_add():
         )
 
 
-@app.route('/account/edit_user')
+@app.route('/add_project', methods=["GET", "POST"])
 @login_required
-def edit_index():
-    pass
+def default_add_project():
+    form = ProjectForm(request.form)
+    if form.validate_on_submit():
+        project = Project()
+        project.name = form.name.data
+        project.description = form.description.data
+
+        db.session.add(project)
+        db.session.commit()
+        flash("Project has been added successfully")
+        return redirect('/projects')
+      
+    return render_template(
+            '/add_project.html', 
+            form=form,
+        )
 
 
 
