@@ -58,11 +58,20 @@ def default_login():
 def default_edit_user():
     user = User.get_by_id(int(request.args.get('user_id')))
     form = UserForm(request.form, user=user)
-    message = ''
     if form.validate_on_submit():
-        flash("Edited")
-        return redirect('/account')
-    return render_template("/edit_user.html", form=form, message=message)
+        user.username = form.username.data
+        if form.password.data:
+            hash_ = hashlib.sha512()
+            hash_.update(form.password.data)
+            password = hash_.hexdigest()
+            user.password = password
+        if form.public_key.data:
+            user.public_key = form.public_key.data
+
+        db.session.commit()
+        flash("User has been edited successfully")
+        return redirect('/users')
+    return render_template("/edit_user.html", form=form, user=user)
 
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_edit_project():

@@ -40,6 +40,7 @@ class UserForm(Form):
         if 'user' in kwargs:
             user = kwargs['user']
             kwargs.setdefault('public_key', user.public_key)
+            kwargs.setdefault('username', user.username)
             self._user = user
         super(UserForm, self).__init__(formdata, obj, prefix, **kwargs)
 
@@ -66,7 +67,7 @@ class UserForm(Form):
             'Public Key', 
             [
                 validators.Length(min=2, max=30), 
-                validators.Required()
+                validators.Optional()
             ]
         )
 

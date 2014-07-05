@@ -1,0 +1,23 @@
+{% extends "layout_user.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>Edit User</h1>
+
+    <form method=post action="/edit_user?user_id={{user.id}}">
+    <dl>
+        {{ form.csrf_token }}
+        {{ render_field(form.username) }}
+        {{ render_field(form.password) }}
+        {{ render_field(form.public_key) }}
+    </dl>
+      <input type="submit" value="Submit">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
+
+
