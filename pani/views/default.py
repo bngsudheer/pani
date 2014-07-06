@@ -5,6 +5,7 @@ from flask import request, render_template, flash, session, redirect, url_for
 
 from flask.ext.login import login_required
 from flask.ext.login import login_user
+from flask.ext.login import logout_user
 from flask.ext.login import current_user
 
 from flask.ext.paginate import Pagination
@@ -30,8 +31,9 @@ def default_index():
 
 @app.route('/account')
 @login_required
-def account_index():
-
+def default_account():
+    """My Account view.
+    """
     return render_template('/account/index.html', user=current_user)
 
 
@@ -91,7 +93,7 @@ def default_edit_project():
 
 @app.route('/logout')
 @login_required
-def account_logout():
+def default_logout():
     # Remove the user information from the session
     logout_user()
 
@@ -105,8 +107,8 @@ def account_logout():
 
 
 
-@app.route("/account/unauthorized", methods=["GET"])
-def account_unauthorized():
+@app.route("/unauthorized", methods=["GET"])
+def default_unauthorized():
     return 'unauthorized to access this page'
 
 
@@ -114,7 +116,7 @@ def account_unauthorized():
 
 @app.route('/users')
 @login_required
-def user_index():
+def default_users():
 
     page = int(request.args.get('page', 1))
     per_page = 10
@@ -170,7 +172,7 @@ def default_projects():
 
 @app.route('/user/add', methods=["GET", "POST"])
 @login_required
-def user_add():
+def default_user_add():
     form = UserForm(request.form)
     if form.validate_on_submit():
         user = User()

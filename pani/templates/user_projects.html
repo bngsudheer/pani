@@ -1,0 +1,20 @@
+{% extends "layout_user.html" %}
+
+{% block title %}User Projects{% endblock %}
+
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>User Projects</h1>
+
+    <form method="post" action="/user_projects?user_id={{user_id}}">
+    <dl>
+        {{ form.csrf_token }}
+        {{ render_field(form.projects) }}
+    </dl>
+      <input type="submit" value="Submit">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
