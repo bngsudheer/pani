@@ -24,21 +24,20 @@ from pani import db
 @app.route('/')
 @login_required
 def default_index():
-    """Default index view.
-    """
+    """Default index view."""
     return render_template('/index.html', show_big_header=True)
 
 
 @app.route('/account')
 @login_required
 def default_account():
-    """My Account view.
-    """
-    return render_template('/account/index.html', user=current_user)
+    """My Account view."""
+    return render_template('/account.html', user=current_user)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def default_login():
+    """View with login form."""
     form = LoginForm()
     message = ''
     if form.validate_on_submit():
@@ -60,6 +59,7 @@ def default_login():
 
 @app.route("/edit_user", methods=["GET", "POST"])
 def default_edit_user():
+    """View to edit the user."""
     user = User.get_by_id(int(request.args.get('user_id')))
     form = UserForm(request.form, user=user)
     if form.validate_on_submit():
@@ -79,6 +79,7 @@ def default_edit_user():
 
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_edit_project():
+    """View to list the projects of the user."""
     project = Project.get_by_id(int(request.args.get('project_id')))
     form = ProjectForm(request.form, project=project)
     if form.validate_on_submit():
@@ -94,6 +95,7 @@ def default_edit_project():
 @app.route('/logout')
 @login_required
 def default_logout():
+    """Logout the user."""
     # Remove the user information from the session
     logout_user()
 
@@ -109,14 +111,14 @@ def default_logout():
 
 @app.route("/unauthorized", methods=["GET"])
 def default_unauthorized():
+    """View for unauthorized access of the application."""
     return 'unauthorized to access this page'
-
-
 
 
 @app.route('/users')
 @login_required
 def default_users():
+    """View to list the users."""
 
     page = int(request.args.get('page', 1))
     per_page = 10
@@ -145,6 +147,7 @@ def default_users():
 @app.route('/projects')
 @login_required
 def default_projects():
+    """View to list the projects."""
 
     page = int(request.args.get('page', 1))
     per_page = 10
@@ -173,6 +176,7 @@ def default_projects():
 @app.route('/user/add', methods=["GET", "POST"])
 @login_required
 def default_user_add():
+    """Form to add a user account."""
     form = UserForm(request.form)
     if form.validate_on_submit():
         user = User()
@@ -205,6 +209,7 @@ def default_user_add():
 @app.route('/add_project', methods=["GET", "POST"])
 @login_required
 def default_add_project():
+    """Add a project."""
     form = ProjectForm(request.form)
     if form.validate_on_submit():
         project = Project()
@@ -225,6 +230,7 @@ def default_add_project():
 @app.route('/user_projects', methods=["GET", "POST"])
 @login_required
 def default_user_projects():
+    """List the projects of the user."""
     user_id = int(request.args.get('user_id'))
 
     form = UserProjectForm(request.form, user_id=user_id) 
