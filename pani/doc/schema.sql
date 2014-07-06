@@ -11,6 +11,11 @@ CREATE TABLE projects (
     description TEXT NULL
 );
 
+CREATE TABLE users_projects (
+    user_id INTEGER NOT NULL,
+    project_id INTEGER NOT NULL,
+    PRIMARY KEY(user_id, project_id)
+);
 
 
 /* Default data

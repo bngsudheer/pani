@@ -26,4 +26,13 @@ class Project(db.Model):
 
 
            
+    @classmethod
+    def get_choices_form(cls):
+
+        projects = db.session.query(cls)
+        items = []
+        for project in projects:
+            items.append((project.id, project.name))
+
+        return items
             

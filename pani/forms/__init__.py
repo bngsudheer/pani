@@ -10,6 +10,19 @@ from pani.forms.gvalidators import ValidPassword
 from flask_wtf import Form as fwtfForm
 from flask_wtf import RecaptchaField
 
+from pani.model.project import Project
+from pani.model.user_project import UserProject
+
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 
 
 class LoginForm(Form):
@@ -102,5 +115,19 @@ class ProjectForm(Form):
         )
 
 
+
+class UserProjectForm(Form):
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        up = UserProject()
+        kwargs.setdefault('projects', up.get_project_ids(kwargs['user_id']))
+        super(UserProjectForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+
+    _choices = Project.get_choices_form()
+    projects = MultiCheckboxField(
+            label='Projects', 
+            choices=_choices,
+            coerce=int
+        )
 
 

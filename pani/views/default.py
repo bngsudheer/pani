@@ -13,9 +13,11 @@ from pani import app
 from pani.forms import LoginForm
 from pani.forms import UserForm
 from pani.forms import ProjectForm
+from pani.forms import UserProjectForm
 
 from pani.model.user import User
 from pani.model.project import Project
+from pani.model.user_project import UserProject
 from pani import db
 
 @app.route('/')
@@ -217,6 +219,32 @@ def default_add_project():
             form=form,
         )
 
+
+@app.route('/user_projects', methods=["GET", "POST"])
+@login_required
+def default_user_projects():
+    user_id = int(request.args.get('user_id'))
+
+    form = UserProjectForm(request.form, user_id=user_id) 
+    if request.method == 'POST' and form.validate():
+        query = db.session.query(UserProject).filter(UserProject.user_id==user_id)
+        query = query.delete()
+
+        for project_id in form.projects.data:
+            up = UserProject()
+            up.user_id = user_id
+            up.project_id = project_id
+            db.session.add(up)
+
+        db.session.commit()
+        flash('The user\'s projects have been saved.', 'message')
+        return redirect('/user_projects?user_id=%s'%user_id)
+
+    return render_template(
+            '/user_projects.html', 
+            form=form,
+            user_id=user_id,
+        )
 
 
 
