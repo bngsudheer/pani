@@ -54,7 +54,7 @@ def default_login():
             return redirect('/account')
         else:
             message = 'Invalid username or password'
-    return render_template("/account/login.html", form=form, message=message)
+    return render_template("/login.html", form=form, message=message)
 
 
 @app.route("/edit_user", methods=["GET", "POST"])
@@ -119,7 +119,6 @@ def default_unauthorized():
 @login_required
 def default_users():
     """View to list the users."""
-
     page = int(request.args.get('page', 1))
     per_page = 10
 
@@ -148,7 +147,6 @@ def default_users():
 @login_required
 def default_projects():
     """View to list the projects."""
-
     page = int(request.args.get('page', 1))
     per_page = 10
 
