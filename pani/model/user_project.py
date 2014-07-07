@@ -30,7 +30,15 @@ class UserProject(db.Model):
     def get_project_ids(self, user_id):
         """Return the list of project IDs for the given user ID.
         """
+        
+        items = []
+        for row in self.get_projects(user_id):
+            items.append(row.id)
 
+        return items
+
+
+    def get_projects(self, user_id):
         user_projects = db.session.query(
                     UserProject, 
                     Project.id, 
@@ -38,12 +46,6 @@ class UserProject(db.Model):
                 join(Project, Project.id==UserProject.project_id).\
                 filter(UserProject.user_id == user_id)
 
-        items = []
-        for row in user_projects:
-            items.append(row.id)
 
-
-        return items
-
-
+        return user_projects
     

@@ -79,7 +79,7 @@ class UserForm(Form):
     public_key = TextField(
             'Public Key', 
             [
-                validators.Length(min=2, max=30), 
+                validators.Length(min=2, max=500), 
                 validators.Optional()
             ]
         )

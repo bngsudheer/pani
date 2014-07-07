@@ -15,10 +15,12 @@ from pani.forms import LoginForm
 from pani.forms import UserForm
 from pani.forms import ProjectForm
 from pani.forms import UserProjectForm
+from pani.forms import DeleteForm
 
 from pani.model.user import User
 from pani.model.project import Project
 from pani.model.user_project import UserProject
+
 from pani import db
 
 @app.route('/')
@@ -137,7 +139,7 @@ def default_users():
         )
 
     return render_template(
-            '/account/users.html', 
+            '/users.html', 
             users=users, 
             pagination=pagination
         )
@@ -233,7 +235,8 @@ def default_user_projects():
 
     form = UserProjectForm(request.form, user_id=user_id) 
     if request.method == 'POST' and form.validate():
-        query = db.session.query(UserProject).filter(UserProject.user_id==user_id)
+        query = db.session.query(UserProject).\
+                filter(UserProject.user_id==user_id)
         query = query.delete()
 
         for project_id in form.projects.data:
@@ -251,6 +254,56 @@ def default_user_projects():
             form=form,
             user_id=user_id,
         )
+
+
+@app.route('/save_settings', methods=["GET", "POST"])
+@login_required
+def default_save_settings():
+    """Generate the .ssh/authorized_keys file"""
+
+    form = DeleteForm(request.form) 
+
+    if form.validate_on_submit():
+
+        authorize_keys_file = open(app.config['AUTHORIZED_KEYS_PATH'], 'w')
+        lines = ""
+
+        for user in db.session.query(User):
+            print "###############3"
+            print user.username
+            print lines
+            user_projects = UserProject().get_projects(user.id)
+            projects = ""
+            for user_project in user_projects:
+                if projects:
+                    projects = "%s %s"%(projects, user_project.name)
+                else:
+                    # For the first line no need to add any spaces
+                    projects = "%s"%(user_project.name)
+
+            projects = projects.strip()
+
+            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s \" %s"%(projects, user.public_key)
+            if lines:
+                lines = "%s\n%s"%(lines, line)
+            else:
+                # For the first line, no need to append any spaces or newlines
+                lines = "%s"%(line)
+
+            print lines
+        lines = lines.strip()
+        authorize_keys_file.write(lines)
+        authorize_keys_file.close()
+        flash('The settings have been saved to file')
+        return redirect('/')
+
+       
+
+    return render_template(
+            '/save_settings.html', 
+            form=form,
+        )
+
 
 
 

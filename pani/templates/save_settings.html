@@ -1,0 +1,21 @@
+{% extends "layout_user.html" %}
+
+{% block title %}Save Settings{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>Save Settings</h1>
+
+  <p>Are you sure you want to save settings? The action cannot be undone.</p>
+    <form method=post action="/save_settings">
+    <dl>
+        {{ form.csrf_token }}
+    </dl>
+      <input type="submit" value="Submit">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
+
+
