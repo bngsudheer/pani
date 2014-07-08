@@ -1,7 +1,9 @@
 import hashlib
+import time
 
 from flask import render_template
 from flask import request, render_template, flash, session, redirect, url_for
+from flask import abort
 
 from flask.ext.login import login_required
 from flask.ext.login import login_user
@@ -20,6 +22,7 @@ from pani.forms import DeleteForm
 from pani.model.user import User
 from pani.model.project import Project
 from pani.model.user_project import UserProject
+from pani.model.login_attempt import LoginAttempt
 
 from pani import db
 
@@ -40,6 +43,16 @@ def default_account():
 @app.route("/login", methods=["GET", "POST"])
 def default_login():
     """View with login form."""
+    if len(request.access_route) > 1:
+        ip = request.access_route[-1]
+    else:
+        ip = request.access_route[0]
+
+    login_attempt = LoginAttempt()
+    previous_attempts = login_attempt.get_failed_attempts_count(ip, (time.time() - 60*60*24))
+    if previous_attempts > 10:
+        abort(403)
+        
     form = LoginForm()
     message = ''
     if form.validate_on_submit():
@@ -49,12 +62,26 @@ def default_login():
         user = User.query.filter_by(password=password).\
                 filter_by(username=form.username.data).\
                 first()
+
+        login_attempt.success = False
+        login_attempt.username = form.username.data
+
+        login_attempt.ip_address = ip
+        
         if user:
+            login_atempt.success = True
             # login and validate the user...
             login_user(user)
+
+            #log the attempt
+            db.session.add(login_attempt)
+            db.session.commit()
             flash("Logged in successfully")
             return redirect('/account')
         else:
+            db.session.add(login_attempt)
+            db.session.commit()
+
             message = 'Invalid username or password'
     return render_template("/login.html", form=form, message=message)
 
@@ -269,9 +296,6 @@ def default_save_settings():
         lines = ""
 
         for user in db.session.query(User):
-            print "###############3"
-            print user.username
-            print lines
             user_projects = UserProject().get_projects(user.id)
             projects = ""
             for user_project in user_projects:
@@ -290,7 +314,6 @@ def default_save_settings():
                 # For the first line, no need to append any spaces or newlines
                 lines = "%s"%(line)
 
-            print lines
         lines = lines.strip()
         authorize_keys_file.write(lines)
         authorize_keys_file.close()

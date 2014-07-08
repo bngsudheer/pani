@@ -17,6 +17,14 @@ CREATE TABLE users_projects (
     PRIMARY KEY(user_id, project_id)
 );
 
+CREATE TABLE login_attempts (
+    id INTEGER PRIMARY KEY ASC,
+    username TEXT NOT NULL,
+    ip_address TEXT NOT NULL,
+    success INTEGER NOT NULL,
+    date_ INTEGER NOT NULL
+);
+
 
 /* Default data
 */
