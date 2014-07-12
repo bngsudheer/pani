@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+"""
+    flask
+    ~~~~~
+
+    A mercurial manager. It's a glue application to put together
+    various mercurial tools
+
+    :copyright: (c) 2014 by Sudheera Satyanrayana.
+    :license: BSD, see LICENSE for more details.
+"""
+
+__version__ = '0.1'
+
+
 from flask import Flask
 from flask import request, render_template, flash, session, redirect, url_for
 
