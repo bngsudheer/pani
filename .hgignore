@@ -9,3 +9,5 @@ syntax: glob
 *run-tornado.py*
 *run-tornado-gavika.py*
 
+syntax: glob
+pani/doc/build/*

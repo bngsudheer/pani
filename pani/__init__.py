@@ -38,7 +38,6 @@ default  = getattr(temp, 'default')
 app.add_url_rule('/login', 'login', default.default_login)
 
 
-
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.setup_app(app)
@@ -47,7 +46,6 @@ login_manager.setup_app(app)
 @login_manager.user_loader
 def load_user(userid):
         return User.get_by_id(int(userid))
-
 
 
 @app.errorhandler(403)
