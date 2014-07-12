@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask
+    Pani
     ~~~~~
 
     A mercurial manager. It's a glue application to put together
