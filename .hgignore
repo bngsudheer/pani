@@ -1,13 +1,7 @@
 syntax: glob
 *.pyc
-
-syntax: glob
 *.swp
-
-
-syntax: glob
 *run-tornado.py*
 *run-tornado-gavika.py*
-
-syntax: glob
 pani/doc/build/*
+pani.tar.gz

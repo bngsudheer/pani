@@ -69,7 +69,7 @@ def default_login():
         login_attempt.ip_address = ip
         
         if user:
-            login_atempt.success = True
+            login_attempt.success = True
             # login and validate the user...
             login_user(user)
 

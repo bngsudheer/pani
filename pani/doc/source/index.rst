@@ -35,13 +35,45 @@ Installation
 
 * Download the tarball::
 
-    $ some command
+    $ wget 'https://bitbucket.org/bngsudheer/paniweb/downloads/pani.tar.gz'
 
-    
+* Extract the tarball::
+
+    $ tar -zxvf pani.tar.gz 
+
+* Install the Paniweb application::
+
+    $ ~/panienv/bin/python setup.py install
+
+* Paniweb requires a configuration file. The location of the configuration file should be set in your environment. For example, add this in your ~/.bashrc file::
+
+    export PANI_SITE_SETTINGS=/home/mercurial/etc/pani.cfg
+
+* The next time you login to the shell, the environment variable will be available. To make it available immediately::
+
+    source ~/.bashrc 
+
+* Create the directory for configuration::
+    mkdir ~/etc
+
+* Setup the database::
+    cat pani/doc/schema.sql | sqlite3 pani.db
+
+* Add the following to your configuration file(/home/mercurial/etc/pani.cfg)::
+
+    SQLALCHEMY_DATABASE_URI='sqlite:////home/mercurial/pai/pani.db'
+    SQLALCHEMY_ECHO='true'
+    MAIL_SERVER='mymailserver.example.com'
+    MAIL_PORT='25'
+    MAIL_USERNAME='service@example.com'
+    MAIL_PASSWORD='secret'
+    MAIL_DEFAULT_SENDER='service@example.com'
+    HASH='anotherscrethash'
+    SESSION_SECRET_KEY='yetanothersecret'
+    DEBUG=False
+    AUTHORIZED_KEYS_PATH='/home/mercurial/.ssh/authorized_keys'
 
 
-
-To install Pani, download the tarball.
 
 Indices and tables
 ==================
