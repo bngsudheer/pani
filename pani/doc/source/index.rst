@@ -28,6 +28,14 @@ Installation
 
     # su - mercurial
 
+* Download the hg-ssh script::
+
+    $ wget 'http://www.selenic.com/repo/hg-stable/raw-file/tip/contrib/hg-ssh'
+
+* Make the file executable::
+
+    $ chmod u+x hg-ssh
+
 * Create a Python virtual environment::
 
     $ virtualenv panienv
@@ -68,15 +76,16 @@ Installation
 
     SQLALCHEMY_DATABASE_URI='sqlite:////home/mercurial/pai/pani.db'
     SQLALCHEMY_ECHO='true'
-    MAIL_SERVER='mymailserver.example.com'
-    MAIL_PORT='25'
-    MAIL_USERNAME='service@example.com'
-    MAIL_PASSWORD='secret'
-    MAIL_DEFAULT_SENDER='service@example.com'
-    HASH='anotherscrethash'
     SESSION_SECRET_KEY='yetanothersecret'
     DEBUG=False
     AUTHORIZED_KEYS_PATH='/home/mercurial/.ssh/authorized_keys'
+    BASE_PATH='/home/mercurial'
+
+* Create .ssh directory if it does not exist alredy::
+
+    ssh-keygen
+
+The lazy of creating the .ssh directory with appropriate permission.
 
 * Run the application::
 

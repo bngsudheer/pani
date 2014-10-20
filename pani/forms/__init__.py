@@ -131,3 +131,20 @@ class UserProjectForm(Form):
         )
 
 
+class ProjectUserForm(Form):
+    _project_id = None
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        up = UserProject()
+        self._project_id = kwargs['project_id']
+        kwargs.setdefault('users', up.get_user_ids(kwargs['project_id']))
+        super(ProjectUserForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+
+    _choices = UserProject.get_project_users_choices_form(_project_id)
+    users = MultiCheckboxField(
+            label='Users', 
+            choices=_choices,
+            coerce=int
+        )
+
+

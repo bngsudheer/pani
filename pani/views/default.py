@@ -1,5 +1,7 @@
 import hashlib
 import time
+import os
+from subprocess import call
 
 from flask import render_template
 from flask import request, render_template, flash, session, redirect, url_for
@@ -16,7 +18,8 @@ from pani import app
 from pani.forms import LoginForm
 from pani.forms import UserForm
 from pani.forms import ProjectForm
-from pani.forms import UserProjectForm
+#from pani.forms import UserProjectForm
+from pani.forms import ProjectUserForm
 from pani.forms import DeleteForm
 
 from pani.model.user import User
@@ -118,6 +121,19 @@ def default_edit_project():
         flash("Project has been successfully edited")
         return redirect('/projects')
     return render_template("/edit_project.html", form=form, project=project)
+
+@app.route("/edit_project", methods=["GET", "POST"])
+def default_projects_users():
+    """View and assign list of users to project."""
+    project = Project.get_by_id(int(request.args.get('project_id')))
+    form = ProjectForm(request.form, project=project)
+    if form.validate_on_submit():
+        project.name = form.name.data
+        project.description = form.description.data
+        db.session.commit()
+        flash("Project has been successfully edited")
+        return redirect('/projects')
+    return render_template("/projects_users.html", form=form, project=project)
 
 
 
@@ -254,32 +270,32 @@ def default_add_project():
         )
 
 
-@app.route('/user_projects', methods=["GET", "POST"])
+@app.route('/project_users', methods=["GET", "POST"])
 @login_required
 def default_user_projects():
-    """List the projects of the user."""
-    user_id = int(request.args.get('user_id'))
+    """List the users of the project."""
+    project_id = int(request.args.get('project_id'))
 
-    form = UserProjectForm(request.form, user_id=user_id) 
+    form = ProjectUserForm(request.form, project_id=project_id) 
     if request.method == 'POST' and form.validate():
         query = db.session.query(UserProject).\
-                filter(UserProject.user_id==user_id)
+                filter(UserProject.project_id==project_id)
         query = query.delete()
 
-        for project_id in form.projects.data:
+        for user_id in form.users.data:
             up = UserProject()
-            up.user_id = user_id
             up.project_id = project_id
+            up.user_id = user_id
             db.session.add(up)
 
         db.session.commit()
-        flash('The user\'s projects have been saved.', 'message')
-        return redirect('/user_projects?user_id=%s'%user_id)
+        flash('The projects\'s users have been saved.', 'message')
+        return redirect('/projects')
 
     return render_template(
-            '/user_projects.html', 
+            '/projects_users.html', 
             form=form,
-            user_id=user_id,
+            project_id=project_id,
         )
 
 
@@ -292,14 +308,46 @@ def default_save_settings():
 
     if form.validate_on_submit():
 
+        # Create projects
+        if not os.path.exists("%s/repositories/"%app.config['BASE_PATH']):
+            os.mkdir("%s/repositories/"%app.config['BASE_PATH'])
+
+        for project in db.session.query(Project):
+            project_path = "%s/repositories/%s"%(
+                app.config['BASE_PATH'],
+                project.name,
+            )
+
+            if not os.path.exists(project_path):
+                os.mkdir(project_path)
+                call(
+                    [
+                        'hg', 
+                        'init', 
+                        '%s/repositories/%s'%(
+                            app.config['BASE_PATH'], 
+                            project.name
+                        )
+                    ]
+                )
+
+
         authorize_keys_file = open(app.config['AUTHORIZED_KEYS_PATH'], 'w')
         lines = ""
 
-        for user in db.session.query(User):
+        user_query = db.session.query(
+            User
+        ).filter(
+            User.public_key != ''
+        ).filter(
+            User.public_key != None
+        )
+
+        for user in user_query:
             user_projects = UserProject().get_projects(user.id)
             projects = ""
             for user_project in user_projects:
-                if projects:
+                if user_project:
                     projects = "%s %s"%(projects, user_project.name)
                 else:
                     # For the first line no need to add any spaces
@@ -307,7 +355,7 @@ def default_save_settings():
 
             projects = projects.strip()
 
-            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s \" %s"%(projects, user.public_key)
+            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s\" %s"%(projects, user.public_key)
             if lines:
                 lines = "%s\n%s"%(lines, line)
             else:
@@ -317,6 +365,8 @@ def default_save_settings():
         lines = lines.strip()
         authorize_keys_file.write(lines)
         authorize_keys_file.close()
+        # Make sure the permission are correct
+        call(['chmod', '600', app.config['AUTHORIZED_KEYS_PATH']])
         flash('The settings have been saved to file')
         return redirect('/')
 
