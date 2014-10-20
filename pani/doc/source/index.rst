@@ -41,6 +41,10 @@ Installation
 
     $ tar -zxvf pani.tar.gz 
 
+* Change directory::
+
+    $ cd pani
+
 * Install the Paniweb application::
 
     $ ~/panienv/bin/python setup.py install
@@ -54,10 +58,11 @@ Installation
     source ~/.bashrc 
 
 * Create the directory for configuration::
-    mkdir ~/etc
+    $ mkdir ~/etc
 
 * Setup the database::
-    cat pani/doc/schema.sql | sqlite3 pani.db
+
+    $ cat pani/doc/schema.sql | sqlite3 pani.db
 
 * Add the following to your configuration file(/home/mercurial/etc/pani.cfg)::
 
@@ -73,7 +78,18 @@ Installation
     DEBUG=False
     AUTHORIZED_KEYS_PATH='/home/mercurial/.ssh/authorized_keys'
 
+* Run the application::
 
+    $ ~/panienv/bin/python runserver.py
+
+The application will be running on port 5006. Setup a proxt to put Pani behind a web server like Apache or Nginx if you wish. 
+
+The default account details::
+
+    username: admin
+    password: password
+
+To change the password, click Users and then click Edit button next to the user.
 
 Indices and tables
 ==================
