@@ -272,7 +272,7 @@ def default_add_project():
 
 @app.route('/project_users', methods=["GET", "POST"])
 @login_required
-def default_user_projects():
+def default_project_users():
     """List the users of the project."""
     project_id = int(request.args.get('project_id'))
 

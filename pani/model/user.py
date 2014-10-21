@@ -41,3 +41,13 @@ class User(db.Model):
 
     def is_anonymous(self):
         return False
+
+    @classmethod
+    def get_choices_form(cls):
+        users = db.session.query(cls)
+        items = []
+        for user in users:
+            items.append((user.id, user.username))
+
+        return items
+    

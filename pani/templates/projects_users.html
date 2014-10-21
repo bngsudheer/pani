@@ -8,7 +8,7 @@
 {% block content %}
     <h1>Set Users For The Project</h1>
 
-    <form method=post action="/add_project">
+    <form method=post action="/project_users?project_id={{project_id}}">
     <dl>
         {{ form.csrf_token }}
         {{ form.users }}

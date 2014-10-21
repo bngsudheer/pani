@@ -11,6 +11,7 @@ from flask_wtf import Form as fwtfForm
 from flask_wtf import RecaptchaField
 
 from pani.model.project import Project
+from pani.model.user import User
 from pani.model.user_project import UserProject
 
 class MultiCheckboxField(SelectMultipleField):
@@ -140,7 +141,7 @@ class ProjectUserForm(Form):
         super(ProjectUserForm, self).__init__(formdata, obj, prefix, **kwargs)
 
 
-    _choices = UserProject.get_project_users_choices_form(_project_id)
+    _choices = User.get_choices_form()
     users = MultiCheckboxField(
             label='Users', 
             choices=_choices,

@@ -65,12 +65,12 @@ class UserProject(db.Model):
         """
         
         items = []
-        for row in self.get_users_by_project_id(project_id):
+        for row in self.get_users(project_id):
             items.append(row.id)
 
         return items
 
-    def get_users_by_project_id(self, project_id):
+    def get_users(self, project_id):
         user_projects = db.session.query(
                     UserProject, 
                     User.id, 
