@@ -66,6 +66,7 @@ Installation
     source ~/.bashrc 
 
 * Create the directory for configuration::
+
     $ mkdir ~/etc
 
 * Setup the database::
@@ -74,8 +75,8 @@ Installation
 
 * Add the following to your configuration file(/home/mercurial/etc/pani.cfg)::
 
-    SQLALCHEMY_DATABASE_URI='sqlite:////home/mercurial/pai/pani.db'
-    SQLALCHEMY_ECHO='true'
+    SQLALCHEMY_DATABASE_URI='sqlite:////home/mercurial/pani/pani.db'
+    SQLALCHEMY_ECHO='false'
     SESSION_SECRET_KEY='yetanothersecret'
     DEBUG=False
     AUTHORIZED_KEYS_PATH='/home/mercurial/.ssh/authorized_keys'
@@ -85,7 +86,7 @@ Installation
 
     ssh-keygen
 
-The lazy of creating the .ssh directory with appropriate permission.
+The lazy way of creating the .ssh directory with appropriate permission.
 
 * Run the application::
 
