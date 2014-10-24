@@ -5,7 +5,7 @@ import hashlib
 
 class ValidPassword(object):
     """
-    Check if user's password is correct 
+    Check if user's password is correct
     """
     def __init__(self, user=None, message=None):
         self.message = message
@@ -19,8 +19,3 @@ class ValidPassword(object):
             if self.message is None:
                 self.message = field.gettext(u'Invalid password')
             raise wtforms.ValidationError(self.message)
-
-
-
-
-

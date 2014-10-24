@@ -12,15 +12,12 @@
 
 __version__ = '0.1'
 
-
 from flask import Flask
 from flask import request, render_template, flash, session, redirect, url_for
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.login import current_user
-
-
 
 app = Flask(__name__)
 
@@ -34,7 +31,7 @@ temp = __import__('pani.views', globals(), locals(), to_import_list, -1)
 
 from pani.model.user import User
 
-default  = getattr(temp, 'default')
+default = getattr(temp, 'default')
 app.add_url_rule('/login', 'login', default.default_login)
 
 

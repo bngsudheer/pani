@@ -1,6 +1,14 @@
-from flask.ext.wtf import Form  
-from wtforms import BooleanField, TextField, PasswordField, validators, \
-        TextAreaField, BooleanField, SelectMultipleField, widgets
+from flask.ext.wtf import Form
+from wtforms import (
+    BooleanField,
+    TextField,
+    PasswordField,
+    validators,
+    TextAreaField,
+    BooleanField,
+    SelectMultipleField,
+    widgets
+)
 from wtfrecaptcha.fields import RecaptchaField
 
 from pani import app
@@ -14,6 +22,7 @@ from pani.model.project import Project
 from pani.model.user import User
 from pani.model.user_project import UserProject
 
+
 class MultiCheckboxField(SelectMultipleField):
     """
     A multiple-select, except displays a list of checkboxes.
@@ -25,23 +34,22 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 
-
 class LoginForm(Form):
 
     username = TextField(
-            'Username', 
-            [
-                validators.Length(min=2, max=20), 
-                validators.Required()
-            ]
-        )
+        'Username',
+        [
+            validators.Length(min=2, max=20),
+            validators.Required()
+        ]
+    )
     password = PasswordField(
-            'Password', 
-            [
-                validators.Length(min=6, max=20), 
-                validators.Required()
-            ]
-        )
+        'Password',
+        [
+            validators.Length(min=6, max=20),
+            validators.Required()
+        ]
+    )
 
 
 class DeleteForm(Form):
@@ -58,33 +66,29 @@ class UserForm(Form):
             self._user = user
         super(UserForm, self).__init__(formdata, obj, prefix, **kwargs)
 
-
     username = TextField(
-            'Username', 
-            [
-                validators.Length(min=2, max=20), 
-                validators.Required()
-            ]
-        )
+        'Username',
+        [
+            validators.Length(min=2, max=20),
+            validators.Required()
+        ]
+    )
 
     password = PasswordField(
-            'Password', 
-            [
-                validators.Length(min=6, max=20), 
-                validators.Optional()
-            ]
-        )
-
-
+        'Password',
+        [
+            validators.Length(min=6, max=20),
+            validators.Optional()
+        ]
+    )
 
     public_key = TextField(
-            'Public Key', 
-            [
-                validators.Length(min=2, max=500), 
-                validators.Optional()
-            ]
-        )
-
+        'Public Key',
+        [
+            validators.Length(min=2, max=500),
+            validators.Optional()
+        ]
+    )
 
 
 class ProjectForm(Form):
@@ -97,24 +101,21 @@ class ProjectForm(Form):
             self._project = project
         super(ProjectForm, self).__init__(formdata, obj, prefix, **kwargs)
 
-
     name = TextField(
-            'Name', 
-            [
-                validators.Length(min=2, max=20), 
-                validators.Required()
-            ]
-        )
-
+        'Name',
+        [
+            validators.Length(min=2, max=20),
+            validators.Required()
+        ]
+    )
 
     description = TextField(
-            'Description', 
-            [
-                validators.Length(min=2, max=30), 
-                validators.Optional()
-            ]
-        )
-
+        'Description',
+        [
+            validators.Length(min=2, max=30),
+            validators.Optional()
+        ]
+    )
 
 
 class UserProjectForm(Form):
@@ -123,29 +124,28 @@ class UserProjectForm(Form):
         kwargs.setdefault('projects', up.get_project_ids(kwargs['user_id']))
         super(UserProjectForm, self).__init__(formdata, obj, prefix, **kwargs)
 
-
     _choices = Project.get_choices_form()
     projects = MultiCheckboxField(
-            label='Projects', 
-            choices=_choices,
-            coerce=int
-        )
+        label='Projects',
+        choices=_choices,
+        coerce=int
+    )
 
 
 class ProjectUserForm(Form):
+
     _project_id = None
+
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         up = UserProject()
         self._project_id = kwargs['project_id']
         kwargs.setdefault('users', up.get_user_ids(kwargs['project_id']))
         super(ProjectUserForm, self).__init__(formdata, obj, prefix, **kwargs)
 
-
     _choices = User.get_choices_form()
+    print _choices
     users = MultiCheckboxField(
-            label='Users', 
-            choices=_choices,
-            coerce=int
-        )
-
-
+        label='Users',
+        choices=_choices,
+        coerce=int
+    )

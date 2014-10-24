@@ -6,6 +6,7 @@ from flask.ext.login import current_user
 from pani import app
 from pani import db
 
+
 class Project(db.Model):
 
     __tablename__ = 'projects'
@@ -17,15 +18,12 @@ class Project(db.Model):
     def __repr__(self):
         return '<Project %r>' % self.name
 
-
     @classmethod
     def get_by_id(cls, id_):
         id_ = int(id_)
         project = cls.query.filter_by(id=id_).first()
         return project
 
-
-           
     @classmethod
     def get_choices_form(cls):
 
@@ -35,4 +33,3 @@ class Project(db.Model):
             items.append((project.id, project.name))
 
         return items
-            

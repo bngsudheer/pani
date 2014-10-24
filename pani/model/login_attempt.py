@@ -9,6 +9,7 @@ from flask.ext.login import current_user
 from pani import app
 from pani import db
 
+
 class LoginAttempt(db.Model):
 
     __tablename__ = 'login_attempts'
@@ -22,20 +23,18 @@ class LoginAttempt(db.Model):
     def __repr__(self):
         return '<Username %r>' % self.username
 
-
     def get_failed_attempts_count(self, ip_address, start_time):
-        query = db.session.query(func.count(LoginAttempt.id).label('count')).\
-                    filter(LoginAttempt.ip_address == ip_address).\
-                    filter(LoginAttempt.date_ > start_time).\
-                    filter(LoginAttempt.success == False)
+        query = db.session.query(
+            func.count(
+                LoginAttempt.id
+            ).label('count')
+        ).filter(
+            LoginAttempt.ip_address == ip_address
+        ).filter(
+            LoginAttempt.date_ > start_time
+        ).filter(
+            LoginAttempt.success == False
+        )
 
-
-        
         row = query.one()
         return row.count
-
-
-
-
-
-

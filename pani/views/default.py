@@ -18,7 +18,7 @@ from pani import app
 from pani.forms import LoginForm
 from pani.forms import UserForm
 from pani.forms import ProjectForm
-#from pani.forms import UserProjectForm
+# from pani.forms import UserProjectForm
 from pani.forms import ProjectUserForm
 from pani.forms import DeleteForm
 
@@ -28,6 +28,7 @@ from pani.model.user_project import UserProject
 from pani.model.login_attempt import LoginAttempt
 
 from pani import db
+
 
 @app.route('/')
 @login_required
@@ -52,31 +53,36 @@ def default_login():
         ip = request.access_route[0]
 
     login_attempt = LoginAttempt()
-    previous_attempts = login_attempt.get_failed_attempts_count(ip, (time.time() - 60*60*24))
+    previous_attempts = login_attempt.get_failed_attempts_count(
+        ip,
+        (time.time() - 60*60*24)
+    )
     if previous_attempts > 10:
         abort(403)
-        
+
     form = LoginForm()
     message = ''
     if form.validate_on_submit():
         hash_ = hashlib.sha512()
         hash_.update(form.password.data)
         password = hash_.hexdigest()
-        user = User.query.filter_by(password=password).\
-                filter_by(username=form.username.data).\
-                first()
+        user = User.query.filter_by(
+            password=password
+        ).filter_by(
+            username=form.username.data
+        ).first()
 
         login_attempt.success = False
         login_attempt.username = form.username.data
 
         login_attempt.ip_address = ip
-        
+
         if user:
             login_attempt.success = True
-            # login and validate the user...
+            # login and validate the user
             login_user(user)
 
-            #log the attempt
+            # log the attempt
             db.session.add(login_attempt)
             db.session.commit()
             flash("Logged in successfully")
@@ -109,6 +115,7 @@ def default_edit_user():
         return redirect('/users')
     return render_template("/edit_user.html", form=form, user=user)
 
+
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_edit_project():
     """View to list the projects of the user."""
@@ -121,6 +128,7 @@ def default_edit_project():
         flash("Project has been successfully edited")
         return redirect('/projects')
     return render_template("/edit_project.html", form=form, project=project)
+
 
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_projects_users():
@@ -136,7 +144,6 @@ def default_projects_users():
     return render_template("/projects_users.html", form=form, project=project)
 
 
-
 @app.route('/logout')
 @login_required
 def default_logout():
@@ -148,10 +155,8 @@ def default_logout():
     for key in ('identity.name', 'identity.auth_type'):
                 session.pop(key, None)
 
-
     flash("Logged out successfully")
     return redirect(request.args.get('next') or '/')
-
 
 
 @app.route("/unauthorized", methods=["GET"])
@@ -172,20 +177,20 @@ def default_users():
     users = users.offset(per_page*(page-1))
 
     users = users.limit(per_page)
-    
+
     pagination = Pagination(
-            page=page, 
-            total=total_users, 
-            search=False, 
-            record_name='users', 
-            bs_version='3'
-        )
+        page=page,
+        total=total_users,
+        search=False,
+        record_name='users',
+        bs_version='3'
+    )
 
     return render_template(
-            '/users.html', 
-            users=users, 
-            pagination=pagination
-        )
+        '/users.html',
+        users=users,
+        pagination=pagination
+    )
 
 
 @app.route('/projects')
@@ -200,20 +205,20 @@ def default_projects():
     projects = projects.offset(per_page*(page-1))
 
     projects = projects.limit(per_page)
-    
+
     pagination = Pagination(
-            page=page, 
-            total=total_projects, 
-            search=False, 
-            record_name='projects', 
-            bs_version='3'
-        )
+        page=page,
+        total=total_projects,
+        search=False,
+        record_name='projects',
+        bs_version='3'
+    )
 
     return render_template(
-            '/projects.html', 
-            projects=projects, 
-            pagination=pagination
-        )
+        '/projects.html',
+        projects=projects,
+        pagination=pagination
+    )
 
 
 @app.route('/user/add', methods=["GET", "POST"])
@@ -234,19 +239,19 @@ def default_user_add():
             user.password = password
         else:
             user.password = None
- 
+
         user.public_key = form.public_key.data
 
         db.session.add(user)
         db.session.commit()
         flash("User has been added successfully")
         return redirect('/users')
-      
+
     return render_template(
-            '/add_user.html', 
-            form=form,
-            logged_in=False,
-        )
+        '/add_user.html',
+        form=form,
+        logged_in=False,
+    )
 
 
 @app.route('/add_project', methods=["GET", "POST"])
@@ -263,11 +268,11 @@ def default_add_project():
         db.session.commit()
         flash("Project has been added successfully")
         return redirect('/projects')
-      
+
     return render_template(
-            '/add_project.html', 
-            form=form,
-        )
+        '/add_project.html',
+        form=form,
+    )
 
 
 @app.route('/project_users', methods=["GET", "POST"])
@@ -276,10 +281,13 @@ def default_project_users():
     """List the users of the project."""
     project_id = int(request.args.get('project_id'))
 
-    form = ProjectUserForm(request.form, project_id=project_id) 
+    form = ProjectUserForm(request.form, project_id=project_id)
     if request.method == 'POST' and form.validate():
-        query = db.session.query(UserProject).\
-                filter(UserProject.project_id==project_id)
+        query = db.session.query(
+            UserProject
+        ).filter(
+            UserProject.project_id == project_id
+        )
         query = query.delete()
 
         for user_id in form.users.data:
@@ -293,10 +301,10 @@ def default_project_users():
         return redirect('/projects')
 
     return render_template(
-            '/projects_users.html', 
-            form=form,
-            project_id=project_id,
-        )
+        '/projects_users.html',
+        form=form,
+        project_id=project_id,
+    )
 
 
 @app.route('/save_settings', methods=["GET", "POST"])
@@ -304,16 +312,16 @@ def default_project_users():
 def default_save_settings():
     """Generate the .ssh/authorized_keys file"""
 
-    form = DeleteForm(request.form) 
+    form = DeleteForm(request.form)
 
     if form.validate_on_submit():
 
         # Create projects
-        if not os.path.exists("%s/repositories/"%app.config['BASE_PATH']):
-            os.mkdir("%s/repositories/"%app.config['BASE_PATH'])
+        if not os.path.exists("%s/repositories/" % app.config['BASE_PATH']):
+            os.mkdir("%s/repositories/" % app.config['BASE_PATH'])
 
         for project in db.session.query(Project):
-            project_path = "%s/repositories/%s"%(
+            project_path = "%s/repositories/%s" % (
                 app.config['BASE_PATH'],
                 project.name,
             )
@@ -322,15 +330,14 @@ def default_save_settings():
                 os.mkdir(project_path)
                 call(
                     [
-                        'hg', 
-                        'init', 
-                        '%s/repositories/%s'%(
-                            app.config['BASE_PATH'], 
+                        'hg',
+                        'init',
+                        '%s/repositories/%s' % (
+                            app.config['BASE_PATH'],
                             project.name
                         )
                     ]
                 )
-
 
         authorize_keys_file = open(app.config['AUTHORIZED_KEYS_PATH'], 'w')
         lines = ""
@@ -348,19 +355,20 @@ def default_save_settings():
             projects = ""
             for user_project in user_projects:
                 if user_project:
-                    projects = "%s %s"%(projects, user_project.name)
+                    projects = "%s %s" % (projects, user_project.name)
                 else:
                     # For the first line no need to add any spaces
-                    projects = "%s"%(user_project.name)
+                    projects = "%s" % (user_project.name)
 
             projects = projects.strip()
 
-            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s\" %s"%(projects, user.public_key)
+            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s\" %s" % \
+                (projects, user.public_key)
             if lines:
-                lines = "%s\n%s"%(lines, line)
+                lines = "%s\n%s" % (lines, line)
             else:
                 # For the first line, no need to append any spaces or newlines
-                lines = "%s"%(line)
+                lines = "%s" % (line)
 
         lines = lines.strip()
         authorize_keys_file.write(lines)
@@ -370,13 +378,7 @@ def default_save_settings():
         flash('The settings have been saved to file')
         return redirect('/')
 
-       
-
     return render_template(
-            '/save_settings.html', 
-            form=form,
-        )
-
-
-
-
+        '/save_settings.html',
+        form=form,
+    )
