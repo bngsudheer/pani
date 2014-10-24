@@ -5,3 +5,4 @@ syntax: glob
 *run-tornado-gavika.py*
 pani/doc/build/*
 pani.tar.gz
+pani.db
