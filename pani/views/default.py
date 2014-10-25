@@ -347,7 +347,7 @@ def default_save_settings():
         ).filter(
             User.public_key != ''
         ).filter(
-            User.public_key != None
+            User.public_key is not None
         )
 
         for user in user_query:

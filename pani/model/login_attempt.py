@@ -33,7 +33,7 @@ class LoginAttempt(db.Model):
         ).filter(
             LoginAttempt.date_ > start_time
         ).filter(
-            LoginAttempt.success == False
+            LoginAttempt.success is False
         )
 
         row = query.one()
