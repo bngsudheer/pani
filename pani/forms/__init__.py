@@ -143,7 +143,6 @@ class ProjectUserForm(Form):
         super(ProjectUserForm, self).__init__(formdata, obj, prefix, **kwargs)
 
     _choices = User.get_choices_form()
-    print _choices
     users = MultiCheckboxField(
         label='Users',
         choices=_choices,

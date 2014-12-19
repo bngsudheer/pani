@@ -373,9 +373,9 @@ def default_save_settings():
         lines = lines.strip()
         authorize_keys_file.write(lines)
         authorize_keys_file.close()
-        # Make sure the permission are correct
+        # Make sure the permissions are correct
         call(['chmod', '600', app.config['AUTHORIZED_KEYS_PATH']])
-        flash('The settings have been saved to file')
+        flash('The settings have been saved to the file')
         return redirect('/')
 
     return render_template(
