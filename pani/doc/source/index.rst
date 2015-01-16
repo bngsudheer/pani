@@ -28,14 +28,6 @@ Installation
 
     # su - mercurial
 
-* Download the hg-ssh script::
-
-    $ wget 'http://www.selenic.com/repo/hg-stable/raw-file/tip/contrib/hg-ssh'
-
-* Make the file executable::
-
-    $ chmod u+x hg-ssh
-
 * Create a Python virtual environment::
 
     $ virtualenv panienv
