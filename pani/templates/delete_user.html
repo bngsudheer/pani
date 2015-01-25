@@ -1,0 +1,32 @@
+{% extends "layout_user.html" %}
+
+{% block title %}Delete Project{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>Delete User</h1>
+
+    <table class=table>
+      <tr>
+        <td> User 
+        </td>
+        <td>
+          {{ user.username }}
+        </td>
+      </tr>
+    </table>
+    <p>
+      Are you sure you want to delete the user? The action cannot be undone. 
+    </p>
+    <form method=post action="/delete_user?user_id={{user.id}}">
+    <dl>
+        {{ form.csrf_token }}
+    </dl>
+      <input type="submit" value="Delete">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
+
+

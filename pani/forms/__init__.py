@@ -148,3 +148,10 @@ class ProjectUserForm(Form):
         choices=_choices,
         coerce=int
     )
+
+class DeleteProjectConfirmForm(Form):
+    confirm = BooleanField(
+        'Delete',
+        description='Are you sure you want to delete this project? The project repository will be deleted. The action cannot be undone.',
+        default=True,
+    )

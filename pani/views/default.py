@@ -2,6 +2,7 @@ import hashlib
 import time
 import os
 from subprocess import call
+import shutil
 
 from flask import render_template
 from flask import request, render_template, flash, session, redirect, url_for
@@ -21,6 +22,7 @@ from pani.forms import ProjectForm
 # from pani.forms import UserProjectForm
 from pani.forms import ProjectUserForm
 from pani.forms import DeleteForm
+from pani.forms import DeleteProjectConfirmForm
 
 from pani.model.user import User
 from pani.model.project import Project
@@ -28,6 +30,8 @@ from pani.model.user_project import UserProject
 from pani.model.login_attempt import LoginAttempt
 
 from pani import db
+
+from pani.lib.template_filters import shorten_text
 
 
 @app.route('/')
@@ -116,6 +120,19 @@ def default_edit_user():
     return render_template("/edit_user.html", form=form, user=user)
 
 
+@app.route("/delete_user", methods=["GET", "POST"])
+def default_delete_user():
+    """View to delete the user."""
+    user = User.get_by_id(int(request.args.get('user_id')))
+    form = DeleteForm(request.form)
+    if form.validate_on_submit():
+        db.session.delete(user)
+        db.session.commit()
+        flash("The user has been deleted successfully")
+        return redirect('/users')
+    return render_template("/delete_user.html", form=form, user=user)
+
+
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_edit_project():
     """View to list the projects of the user."""
@@ -129,10 +146,35 @@ def default_edit_project():
         return redirect('/projects')
     return render_template("/edit_project.html", form=form, project=project)
 
+@app.route("/delete_project", methods=["GET", "POST"])
+def default_delete_project():
+    """View to list the projects of the user."""
+    project = Project.get_by_id(int(request.args.get('project_id')))
+    form = DeleteProjectConfirmForm(request.form)
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(project)
+            db.session.commit()
+            # Also delete the repository directory
+            project_path = "%s/repositories/%s" % (
+                app.config['BASE_PATH'],
+                project.name,
+            )
+
+            if os.path.exists(project_path):
+                shutil.rmtree(project_path)
+
+            flash("Project has been successfully deleted")
+        else:
+            flash("Project was not deleted")
+        return redirect('/projects')
+    return render_template("/delete_project.html", form=form, project=project)
+
 
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_projects_users():
     """View and assign list of users to project."""
+#    app.jinga_env.filters['shorten_text'] = shorten_text
     project = Project.get_by_id(int(request.args.get('project_id')))
     form = ProjectForm(request.form, project=project)
     if form.validate_on_submit():
@@ -310,7 +352,7 @@ def default_project_users():
 @app.route('/save_settings', methods=["GET", "POST"])
 @login_required
 def default_save_settings():
-    """Generate the .ssh/authorized_keys file"""
+    """Generate the .ssh/authorized_keys file and create the repositories"""
 
     form = DeleteForm(request.form)
 
@@ -362,8 +404,8 @@ def default_save_settings():
 
             projects = projects.strip()
 
-            line = "command=\"cd /home/mercurial/repositories && hg-ssh %s\" %s" % \
-                (projects, user.public_key)
+            line = "command=\"cd %s/repositories && hg-ssh %s\" %s" % \
+                (app.config['BASE_PATH'], projects, user.public_key)
             if lines:
                 lines = "%s\n%s" % (lines, line)
             else:

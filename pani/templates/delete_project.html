@@ -1,0 +1,38 @@
+{% extends "layout_user.html" %}
+
+{% block title %}Delete Project{% endblock %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h1>Delete Project</h1>
+
+    <table class=table>
+      <tr>
+        <td> Project 
+        </td>
+        <td>
+          {{ project.name }}
+        </td>
+      </tr>
+      <tr>
+        <td> Description 
+        </td>
+        <td>
+          {{ project.description }}
+        </td>
+      </tr>
+
+    </table>
+    <form method=post action="/delete_project?project_id={{project.id}}">
+    <dl>
+        {{ form.csrf_token }}
+        {{ render_field(form.confirm) }}
+    </dl>
+      <input type="submit" value="Submit">
+    </form>
+    <div class="clearfix">&nbsp;</div>
+ 
+{% endblock %}
+
+
