@@ -52,9 +52,6 @@ def page_not_found(e):
     return redirect('/account/login')
 
 
-ADMINS = ['sudheer@gavika.com']
-
-
 if __name__ == "__main__":
     app.debug = app.config['DEBUG']
     app.run()
