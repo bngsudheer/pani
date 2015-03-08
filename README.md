@@ -1,0 +1,2 @@
+# pani
+Mercurial repository manager
