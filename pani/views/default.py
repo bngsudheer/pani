@@ -174,7 +174,6 @@ def default_delete_project():
 @app.route("/edit_project", methods=["GET", "POST"])
 def default_projects_users():
     """View and assign list of users to project."""
-#    app.jinga_env.filters['shorten_text'] = shorten_text
     project = Project.get_by_id(int(request.args.get('project_id')))
     form = ProjectForm(request.form, project=project)
     if form.validate_on_submit():
